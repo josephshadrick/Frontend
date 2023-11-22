@@ -8,14 +8,30 @@ headers = {"Content-Type": "application/json"}
 
 @app.route("/")
 def home():
-    return "This is a flask app"
+    return render_template("home.html")
 
 @app.route("/employees")
 def get_employees():
-    return render_template('employees.html', employees=requests.get(
+    return render_template("employees.html", employees=requests.get(
         #"https://joseph-api-4ro5n.ondigitalocean.app/employees"
         "http://localhost:8080/employees"
         ).json()["employees"])
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+@app.route("/login", methods=["POST"])
+def find_record():
+    name = request.form["user"]
+    response = requests.post(
+        #"https://joseph-api-4ro5n.ondigitalocean.app/login"
+        "http://localhost:8080/login"
+        ,headers=headers,json={"name": name,"pswd": request.form["pswd"]}
+        ).text
+    if response == "login success":
+        return render_template("loginsuccess.html",name=name)
+    return render_template("loginfailure.html")
 
 @app.route("/employees", methods=["POST"])
 def change_employees():
